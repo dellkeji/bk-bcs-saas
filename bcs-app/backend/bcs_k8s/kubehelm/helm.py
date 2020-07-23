@@ -153,7 +153,8 @@ class KubeHelmClient:
 
         return template_out, notes_out
 
-    def template_with_ytt_renderer(self, files, name, namespace, parameters, valuefile, cluster_id, bcs_inject_data):
+    def template_with_ytt_renderer(self, files, name, namespace, parameters, valuefile, cluster_id, bcs_inject_data,
+                                   **kwargs):
         """支持post renderer的helm template，并使用ytt(YAML Templating Tool)注入平台信息
         命令: helm template release_name chart -n namespace --post-renderer ytt-renderer
         """
@@ -188,6 +189,11 @@ class KubeHelmClient:
                 # 4. add post render params
                 template_cmd_args += ["--post-renderer", f"{ytt_config_dir}/{YTT_RENDERER_NAME}"]
 
+                # 添加命名行参数
+                if kwargs.get("cmd_flags"):
+                    cmd_flags = " ".join([f"--{flag}" for flag in kwargs["cmd_flags"]])
+                    template_cmd_args += cmd_flags
+
                 template_out, _ = self._run_command_with_retry(max_retries=0, cmd_args=template_cmd_args)
                 # NOTE: 现阶段不需要helm notes输出
                 notes_out = ""
@@ -219,7 +225,8 @@ class KubeHelmClient:
 
         return cmd_out, cmd_err
 
-    def install(self, name, namespace, tmpl_content, chart_name, chart_version, chart_values, chart_api_version):
+    def install(self, name, namespace, tmpl_content, chart_name, chart_version, chart_values, chart_api_version,
+                **kwargs):
         """install helm chart
         NOTE: 这里需要组装chart格式，才能使用helm install
         必要条件

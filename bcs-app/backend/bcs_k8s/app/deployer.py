@@ -11,6 +11,7 @@
 # an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #
+import json
 import logging
 import contextlib
 import traceback
@@ -155,7 +156,8 @@ class AppDeployer:
                     chart_name=self.app.chart.name,
                     chart_version=self.app.version,
                     chart_values=self.app.release.valuefile,
-                    chart_api_version="v2"
+                    chart_api_version="v2",
+                    cmd_flags=json.loads(self.app.cmd_flags)
                 )[0]
                 self.app.release.revision = self.get_release_revision(cmd_out)
                 self.app.release.save()

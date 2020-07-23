@@ -84,6 +84,8 @@ class App(models.Model):
     unique_ns = models.IntegerField(default=0)
     # allow to use helm command
     enable_helm = models.BooleanField(default=False, help_text="如果为True，允许使用helm命名操作chart/release")
+    # 记录helm命令行参数
+    cmd_flags = models.TextField(help_text="记录命令行参数", null=True, blank=True)
 
     objects = AppManager()
 
